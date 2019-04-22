@@ -9,14 +9,30 @@ var Position = VsCode.Position;
 
 var path = require('path');
 var fs = require('fs');
-var open = require('open');
-var copy = require('copy-paste').copy;
 var gitRev = require('git-rev-2');
 var findParentDir = require('find-parent-dir');
 var ini = require('ini');
 
 const gitProvider = require('./gitProvider');
 const requireSelectionForLines = workspace.getConfiguration('openInGitHub').get('requireSelectionForLines');
+
+
+function copy(text, cb) {
+    VsCode.env.clipboard.writeText(text).then( e => {
+        if (cb) {
+            cb(e);
+        }
+    })
+}
+
+function open(url, cb) {
+    VsCode.env.openExternal(VsCode.Uri.parse(url)).then( e => {
+        if (cb) {
+            cb(e);
+        }
+    })
+}
+
 
 function getGitProviderLink(cb, fileFsPath, lines, pr) {
     var repoDir = findParentDir.sync(fileFsPath, '.git');
